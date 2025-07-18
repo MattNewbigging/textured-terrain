@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { RenderPipeline } from "./render-pipeline";
 import { AssetManager, ModelAsset } from "./asset-manager";
 import { AnimatedObject } from "./animated-object";
+import { TexturedTerrain } from "./textured-terrain";
 
 export class GameState {
   private renderPipeline: RenderPipeline;
@@ -12,7 +13,7 @@ export class GameState {
   private camera = new THREE.PerspectiveCamera();
   private controls: OrbitControls;
 
-  private animatedObject: AnimatedObject;
+  private readonly terrain: TexturedTerrain;
 
   constructor(private assetManager: AssetManager) {
     this.setupCamera();
@@ -20,7 +21,6 @@ export class GameState {
     this.renderPipeline = new RenderPipeline(this.scene, this.camera);
 
     this.setupLights();
-    this.setupObjects();
 
     this.controls = new OrbitControls(this.camera, this.renderPipeline.canvas);
     this.controls.enableDamping = true;
@@ -28,16 +28,17 @@ export class GameState {
 
     this.scene.background = new THREE.Color("#1680AF");
 
-    this.animatedObject = new AnimatedObject(assetManager);
-    this.animatedObject.position.z = -0.5;
-    this.animatedObject.playAnimation("idle");
-    this.scene.add(this.animatedObject);
+    this.terrain = new TexturedTerrain(this.assetManager);
+    this.scene.add(this.terrain);
+
+    this.scene.add(new THREE.AxesHelper());
 
     // Start game
     this.update();
   }
 
   private setupCamera() {
+    this.camera.near = 0.1;
     this.camera.fov = 75;
     this.camera.far = 500;
     this.camera.position.set(0, 1.5, 3);
@@ -52,19 +53,12 @@ export class GameState {
     this.scene.add(directLight);
   }
 
-  private setupObjects() {
-    const box = this.assetManager.getModel(ModelAsset.BOX_SMALL);
-    this.scene.add(box);
-  }
-
   private update = () => {
     requestAnimationFrame(this.update);
 
     const dt = this.clock.getDelta();
 
     this.controls.update();
-
-    this.animatedObject.update(dt);
 
     this.renderPipeline.render(dt);
   };

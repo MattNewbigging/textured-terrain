@@ -16,6 +16,8 @@ export enum ModelAsset {
 export enum TextureAsset {
   BANDIT = "bandit-texture.png",
   HDR = "orchard_cartoony.hdr",
+  TERRAIN_HEIGHT = "terrain_height.png",
+  TERRAIN_NORMAL = "terrain_normal.png",
 }
 
 export class AssetManager {
@@ -88,6 +90,16 @@ export class AssetManager {
     this.loadTexture(
       TextureAsset.HDR,
       (texture) => (texture.mapping = THREE.EquirectangularReflectionMapping)
+    );
+
+    this.loadTexture(
+      TextureAsset.TERRAIN_HEIGHT,
+      (texture) => (texture.colorSpace = THREE.LinearSRGBColorSpace)
+    );
+
+    this.loadTexture(
+      TextureAsset.TERRAIN_NORMAL,
+      (texture) => (texture.colorSpace = THREE.LinearSRGBColorSpace)
     );
   }
 
